@@ -1,7 +1,5 @@
 package yymh.connectfour;
 
-import java.util.*;
-
 public class ConnectFour 
 {
 	
@@ -344,14 +342,6 @@ public class ConnectFour
 		}
 		
 		return newArray;
-	}
-	
-	public ConnectFour getCopy()
-	{
-		ConnectFour copy = new ConnectFour();
-		
-		return null;
-		
 	}
 	
 }
