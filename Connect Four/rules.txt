@@ -1,0 +1,16 @@
+How to Play:
+
+Connect Four is a strategic two player game
+in which the players alternate turns dropping
+a chip into a slot on the board.
+
+The object of the game is to be the first to
+get four of your chips in a row horizontally,
+vertically or diagonally. At the same time you
+must stop your opponent from getting four of
+their own chips in a row.
+
+How to Win:
+	
+A player wins by being the first to get four 
+of their chips to line up.
