@@ -7,6 +7,8 @@ import java.awt.event.MouseListener;
 
 import javax.swing.Timer;
 
+import yymh.connectfour.ConnectFourAI.AILevel;
+
 public class ConnectFourMouseListener implements MouseListener 
 {
 
@@ -21,7 +23,7 @@ public class ConnectFourMouseListener implements MouseListener
 	public void mouseClicked(MouseEvent e) {
 		
 		//check if the AI is in middle of thinking. only process click if it isn't
-		if (!driver.getGame().isAITurn()) {
+		if (driver.getGame().getAILevel() == AILevel.NONE || !driver.getGame().isAITurn()) {
 			
 			//moveMade is used to make sure a valid move is made otherwise the computer would make the next move when the user 
 			//clicked on a full slot
@@ -34,7 +36,7 @@ public class ConnectFourMouseListener implements MouseListener
 				if (!driver.getGame().checkForWin(driver.getGame().getCurrentPlayer()))
 				{
 					
-					if (driver.getGame().getAILevel() != ConnectFourAI.AILevel.NONE)
+					if (driver.getGame().getAILevel() != AILevel.NONE)
 					{
 						driver.performAIMove();
 						driver.getBoard().repaint();
