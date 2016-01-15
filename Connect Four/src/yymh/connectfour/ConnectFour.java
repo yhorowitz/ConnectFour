@@ -12,7 +12,6 @@ public class ConnectFour
 	private String player1Name = "Player 1";
 	private String player2Name = "Player 2";
 	
-	//TODO REMOVE private AILevel currentAILevel = new AILevelNone(); 	//keeps track of which AI level is chosen
 	private ConnectFourAI ai = new ConnectFourAI();
 
 	private int currentPlayer = 1;
@@ -45,9 +44,11 @@ public class ConnectFour
 		{
 			int returnValue = ai.getColumnForMove(this);
 			
+			//TODO add logging
+			System.out.println("AI moves in column " + (returnValue + 1));
+			
 			if (this.isValidMove(returnValue))
 				return returnValue;
-			//TODO add logging
 		}
 	}
 	
