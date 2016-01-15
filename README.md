@@ -4,8 +4,6 @@ Simple GUI based ConnectFour game with the option to play against AI
 Known Bugs:
 
 - If the user clicks while the computer is thinking it can stop the AI from running and change the user to player 2. It can also cause the AI to run in an infinite loop freezing the game.
-- Errors with the sound.
-
 
 Want to fix/add/change:
 
