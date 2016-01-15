@@ -4,6 +4,10 @@ import java.util.List;
 
 public class ConnectFourAI {
 
+	static final int DEFAULT_BEGINNER_MOVE_DEPTH = 3;
+	static final int DEFAULT_INTERMEDIATE_MOVE_DEPTH = 5;
+	static final int DEFAULT_EXPERT_MOVE_DEPTH = 7;
+	static final int DEFAULT_NO_AI_MOVE_DEPTH = 0;
 
 	enum AILevel {
 		NONE, BEGINNER, INTERMEDIATE, EXPERT
@@ -38,29 +42,26 @@ public class ConnectFourAI {
 	}
 		
 	public void setDefaultMoveDepthBasedOnLevel(AILevel level) {
-		//set Search depth based on difficult
+		//set search for next move depth based on difficulty
 		switch (this.level) {
 		case NONE:
-			setMoveDepth(0);
-			System.out.println("AI Move depth set to 0"); //logging
+			setMoveDepth(DEFAULT_NO_AI_MOVE_DEPTH);
 			break;
 		case BEGINNER:
-			setMoveDepth(3);
-			System.out.println("AI Move depth set to 3"); //logging
+			setMoveDepth(DEFAULT_BEGINNER_MOVE_DEPTH);
 			break;
 		case INTERMEDIATE:
-			setMoveDepth(5);
-			System.out.println("AI Move depth set to 5"); //logging
+			setMoveDepth(DEFAULT_INTERMEDIATE_MOVE_DEPTH);
 			break;
 		case EXPERT:
-			setMoveDepth(7);
-			System.out.println("AI Move depth set to 7"); //logging
+			setMoveDepth(DEFAULT_EXPERT_MOVE_DEPTH);
 			break;
 		}
 	}
 	
 	public void setMoveDepth(int depth) {
 		this.moveDepth = depth;
+		System.out.println("AI Move depth set to " + depth); //TODO logging
 	}
 	
 	public int getColumnForMove(ConnectFour game) 
@@ -69,22 +70,23 @@ public class ConnectFourAI {
 		ArrayList<Integer> columnScores;
 		int depth = this.moveDepth;
 		
-		
 		//keep looking for the best move until a valid move is made
 		while (true)
 		{
 			//TODO logging
-			System.out.println("Calcualting at depth of " + depth);
+			System.out.println("AI is calcualting next move at depth of " + depth + " future moves");
+			
 			columnScores = minimax(depth, game.getCurrentPlayer(), game);
 			column = getBestMove(columnScores);
 			
 			if (column == RECALCULATE_FLAG) {
 				if (depth > 1){
+					System.out.println("All moves at current depth are equal. Search for next move at a depth of " + (depth - 1) + ".");
 					depth--;
 				}
 				else {
 					// keep making a random move until a valid move is made	
-					System.out.println("AT LOWEST DEPTH. CHOOSING RANDOM VALID COLUMN");
+					System.out.println("AI has reduced its depth to 1. All moves are equal. Choosing a random valid move.");
 					while (true)
 					{
 						column = (int)(Math.random() * 7);
@@ -138,15 +140,6 @@ public class ConnectFourAI {
 	      		return column;
 	      	}
 	      }
-      
-		//logging
-		if (column == RECALCULATE_FLAG) {
-			System.out.println("ALL MOVES ARE EQUAL. RECALCULATE AT A LOWER DEPTH");
-		}
-		else {
-			System.out.println("Best column is column" + column);
-		}
-		
 		
 		return column;
 	}

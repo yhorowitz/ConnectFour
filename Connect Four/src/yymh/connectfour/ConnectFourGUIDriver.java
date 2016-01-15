@@ -1,5 +1,6 @@
 package yymh.connectfour;
 
+import java.applet.Applet;
 import java.applet.AudioClip;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,10 +19,10 @@ public class ConnectFourGUIDriver
 	final static String ACT_CMD_CHANGE_AI_TO_OFF = "AI TO OFF";
 	final static String ACT_CMD_SHOW_RULES = "SHOW RULES";
 	
-	//TODO fix audio
-	private AudioClip tieGameSound = null;//Applet.newAudioClip(this.getClass().getResource("audio/tie_game_sound.wav"));
-	private AudioClip dropSound = null;//Applet.newAudioClip(this.getClass().getResource("audio/token_drop.wav"));
-	private AudioClip winGameSound = null;//Applet.newAudioClip(this.getClass().getResource("audio/win_sound.wav"));
+	private AudioClip tieGameSound = Applet.newAudioClip(this.getClass().getResource("audio/tie_game_sound.wav"));
+	private AudioClip dropSound = Applet.newAudioClip(this.getClass().getResource("audio/token_drop.wav"));
+	private AudioClip winGameSound = Applet.newAudioClip(this.getClass().getResource("audio/win_sound.wav"));
+	private AudioClip loseGameSound = Applet.newAudioClip(this.getClass().getResource("audio/tie_game_sound.wav"));
 	
 	private ConnectFourGUIBoard board;
 	private ConnectFour game;
@@ -37,6 +38,7 @@ public class ConnectFourGUIDriver
 	public void toggleSound() { this.soundEnabled = soundEnabled ? false : true; }
 	public AudioClip getTieGameSound() { return tieGameSound; }
 	public AudioClip getWinGameSound() { return winGameSound; }
+	public AudioClip getLoseGameSound() { return loseGameSound; }
 	public AudioClip getTokenDropSound() { return dropSound; }
 	
 	ConnectFourGUIDriver()
@@ -142,14 +144,14 @@ public class ConnectFourGUIDriver
 			{
 				case 1: 
 					board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_PLAYER_WIN);
+					playSound(getWinGameSound());
 					break;
 				case 2: 
-					board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_AI_WIN); 
+					board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_AI_WIN);
+					playSound(getLoseGameSound());
 					break;
 			}
-			
-			playSound(getTieGameSound());
-			
+						
 		}
 		
 		board.getGrid().removeMouseListener(mouseListener);
@@ -184,8 +186,7 @@ public class ConnectFourGUIDriver
 		
 		while (rulesFile.hasNext())
 		{
-			rules.append(rulesFile.nextLine());
-			rules.append("\n");
+			rules.append(rulesFile.nextLine() + "\n");
 		}
 		
 		rulesFile.close();
@@ -195,10 +196,8 @@ public class ConnectFourGUIDriver
 	
 	public void playSound(AudioClip sound)
 	{
-		//TODO FIX SOUND
-		//if (isSoundEnabled())
-			//sound.play();
-		
+		if (isSoundEnabled() && sound != null)
+			sound.play();		
 	}
 	
 }
