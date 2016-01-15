@@ -122,7 +122,7 @@ public class ConnectFourGUIDriver
 			if (game.getCurrentGameState()[row][column] == 0)
 			{
 				
-				game.makeMove(column);
+				game.makeMove(column, true);
 
 				//animate the drop
 				board.getGrid().animate(row, column);

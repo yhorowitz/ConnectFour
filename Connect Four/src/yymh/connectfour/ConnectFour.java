@@ -1,5 +1,8 @@
 package yymh.connectfour;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 public class ConnectFour 
 {
 	
@@ -8,7 +11,8 @@ public class ConnectFour
 	
 	//array to keep track of what is in each currentGameState
 	private int[][] currentGameState = new int[NUM_OF_ROWS][NUM_OF_COLUMNS];
-	
+	//store the move history of the game in format [move_number][player][move]
+	private TreeMap<Integer, int[]>gameHistory = new TreeMap<Integer, int[]>();
 	private String player1Name = "Player 1";
 	private String player2Name = "Player 2";
 	
@@ -16,8 +20,8 @@ public class ConnectFour
 
 	private int currentPlayer = 1;
 	
-	ConnectFour()
-	{
+	ConnectFour() {
+		//default constructor
 	}
 	
 	public void setCurrentGameState(int[][] currentGameState) { this.currentGameState = currentGameState; }
@@ -38,8 +42,7 @@ public class ConnectFour
 		return ai.getLevel();
 	}
 	
-	public int makeAIMove()
-	{
+	public int makeAIMove() {
 		while (true)
 		{
 			int returnValue = ai.getColumnForMove(this);
@@ -55,12 +58,11 @@ public class ConnectFour
 	public void setCurrentPlayer(int player) { this.currentPlayer = player; }
 	public int getCurrentPlayer() { return this.currentPlayer; }
 	
-	public boolean isValidMove(int column)
-	{
+	public boolean isValidMove(int column) {
 		return this.currentGameState[0][column] == 0;
 	}
-	public void makeMove(int column)
-	{
+	
+	public void makeMove(int column, boolean saveHistory) {
 		int row;
 		
 		//get the first empty row starting from the bottom
@@ -71,10 +73,40 @@ public class ConnectFour
 		}
 		this.currentGameState[row][column] = this.currentPlayer;
 		
+		if (saveHistory) {
+			addMoveToGameHistory(this.currentPlayer, column);
+			printGameHistory();
+		}
 	}
 	
-	public void switchPlayer()
-	{
+	public TreeMap<Integer, int[]> getGameHistory(){
+		return gameHistory;
+	}
+	
+	private void addMoveToGameHistory(int player, int column) {
+		//find first space in array that is null (it will be the next move)
+		int moveNumber = gameHistory.size() + 1;
+		
+		gameHistory.put(moveNumber, new int[] {player, column});
+	}
+	
+	public void printGameHistory() {
+		int moveNumber = -1;
+		int player = -1;
+		int column = -1;
+		//TODO add to log
+		System.out.println("Game History:");
+		for (int i = 0; i < gameHistory.size(); i++) {
+			moveNumber = i + 1;
+			player = gameHistory.get(moveNumber)[0];
+			column = gameHistory.get(moveNumber)[1];
+			System.out.println("Move " + moveNumber + ": player " + player + " moved in column " + (column + 1));
+			
+		}
+		System.out.println();
+	}
+	
+	public void switchPlayer() {
 		switch (currentPlayer)
 		{
 			case 1: setCurrentPlayer(getCurrentPlayer() + 1); break;
@@ -83,8 +115,7 @@ public class ConnectFour
 		
 	}
 	
-	public boolean checkForWin(int playerToCheck)
-	{
+	public boolean checkForWin(int playerToCheck) {
 			boolean isWin = false;
 		
 		//check for horizontal win

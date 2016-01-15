@@ -52,7 +52,7 @@ public class ConnectFourConsoleDriver
 			moveSelection = (input.nextInt() - 1);
 			if (game.isValidMove(moveSelection))
 			{
-				game.makeMove(moveSelection);
+				game.makeMove(moveSelection, true);
 				printCurrentBoard(game.getCurrentGameState());
 				if(game.checkForWin(game.getCurrentPlayer()))
 				{
@@ -101,7 +101,7 @@ public class ConnectFourConsoleDriver
 					aiMove = game.makeAIMove();
 					System.out.println("The computer drops a piece into column " + (aiMove + 1));
 					System.out.println("Best move has been determined to be column " + (aiMove + 1));
-					game.makeMove(aiMove);
+					game.makeMove(aiMove, true);
 					printCurrentBoard(game.getCurrentGameState());
 					if(game.checkForWin(game.getCurrentPlayer()))
 					{

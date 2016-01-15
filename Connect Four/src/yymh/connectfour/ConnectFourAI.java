@@ -79,6 +79,12 @@ public class ConnectFourAI {
 			columnScores = minimax(depth, game.getCurrentPlayer(), game);
 			column = getBestMove(columnScores);
 			
+			//TODO logging
+			//print score of each column
+			for (int i = 0; i < columnScores.size(); i++ ) {
+				System.out.println("Score for column " + (i + 1) + " is " + columnScores.get(i));
+			}
+			
 			if (column == RECALCULATE_FLAG) {
 				if (depth > 1){
 					System.out.println("All moves at current depth are equal. Search for next move at a depth of " + (depth - 1) + ".");
@@ -200,7 +206,7 @@ public class ConnectFourAI {
 			if (futureGameState.isValidMove(i))
 			{
 				//simulate move in copied game
-				futureGameState.makeMove(i);
+				futureGameState.makeMove(i, false);
 				
 				//if the result is a win condition
 				if (futureGameState.checkForWin(futureGameState.getCurrentPlayer()))
