@@ -212,18 +212,18 @@ public class ConnectFourAI {
 				if (futureGameState.checkForWin(futureGameState.getCurrentPlayer()))
 				{
 					//add Integer.MAX_VALUE or Integer.MIN_VALUE respectively based on whose turn it is
-					scoreToAdd = ((turn == 2) ? Integer.MAX_VALUE : Integer.MIN_VALUE);
+					scoreToAdd = (game.isAITurn() ? Integer.MAX_VALUE : Integer.MIN_VALUE);
 				}
 				else if (depth != 0) //if not a win condition and not at the lowest depth, branch to a lower depth
 				{
 					futureGameState.switchPlayer();
 					ArrayList<Integer> futureScores = (minimax(depth - 1, futureGameState.getCurrentPlayer(), futureGameState));
 					
-					if (turn == 1) {
-						scoreToAdd = getHighestScore(futureScores);
+					if (game.isAITurn()) {
+						scoreToAdd = getLowestScore(futureScores);
 					}
 					else {
-						scoreToAdd = getLowestScore(futureScores);
+						scoreToAdd = getHighestScore(futureScores);
 					}
 						
 				}

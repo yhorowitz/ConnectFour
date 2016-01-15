@@ -1,7 +1,10 @@
 package yymh.connectfour;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
+
+import yymh.connectfour.ConnectFourAI.AILevel;
 
 public class ConnectFour 
 {
@@ -19,6 +22,7 @@ public class ConnectFour
 	private ConnectFourAI ai = new ConnectFourAI();
 
 	private int currentPlayer = 1;
+	private int humanPlayerNumber;
 	
 	ConnectFour() {
 		//default constructor
@@ -36,7 +40,17 @@ public class ConnectFour
 	public void setAILevel(ConnectFourAI.AILevel level) 
 	{ 
 		ai.setLevel(level);
+		
+		if (level != AILevel.NONE) {
+			int rand = new Random().nextInt(2) + 1;
+			humanPlayerNumber = rand;
+		}
 	}
+	
+	public boolean isAITurn() {
+		return currentPlayer != humanPlayerNumber;
+	}
+
 	public ConnectFourAI.AILevel getAILevel() 
 	{ 
 		return ai.getLevel();
@@ -45,13 +59,13 @@ public class ConnectFour
 	public int makeAIMove() {
 		while (true)
 		{
-			int returnValue = ai.getColumnForMove(this);
+			int column = ai.getColumnForMove(this);
 			
 			//TODO add logging
-			System.out.println("AI moves in column " + (returnValue + 1));
+			System.out.println("AI moves in column " + (column + 1));
 			
-			if (this.isValidMove(returnValue))
-				return returnValue;
+			if (this.isValidMove(column))
+				return column;
 		}
 	}
 	

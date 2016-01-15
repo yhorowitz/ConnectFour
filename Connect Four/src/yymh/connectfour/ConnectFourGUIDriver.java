@@ -3,11 +3,16 @@ package yymh.connectfour;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+import yymh.connectfour.ConnectFourAI.AILevel;
 
 public class ConnectFourGUIDriver 
 {
@@ -27,6 +32,13 @@ public class ConnectFourGUIDriver
 	final static String ACT_CMD_CHANGE_AI_TO_HARD = "AI TO HARD";
 	final static String ACT_CMD_CHANGE_AI_TO_OFF = "AI TO OFF";
 	final static String ACT_CMD_SHOW_RULES = "SHOW RULES";
+	final static String ACT_CMD_AI_MAKE_MOVE = "MAKE AI MOVE";
+	
+	/*
+	 * timer that controls AI
+	 * A timer is used to ensure that it the AI doesn't move to quickly
+	 */
+	AIMoveTimer timer = new AIMoveTimer(3000, new AIMoveAction());
 	
 	String workingDir = System.getProperty("user.dir");
 	private AudioClip tieGameSound;
@@ -109,9 +121,17 @@ public class ConnectFourGUIDriver
 		board = new ConnectFourGUIBoard();
 		board.getGrid().setGame(game);
 
+		if (game.getAILevel() != AILevel.NONE && game.isAITurn()) {
+			System.out.println("AI goes first");
+			setHeaderLabel();
+			timer.start();
+		}
+		else {
+			System.out.println("Human player goes first");
+		}
+		
 		addActionListeners();
 	}
-
 	
 	public boolean makeMove(int column)
 	{
@@ -162,17 +182,16 @@ public class ConnectFourGUIDriver
 		}
 		else
 		{
+			boolean isHumanPlayersTurn = game.isAITurn();
 			
-			switch (game.getCurrentPlayer())
-			{
-				case 1: 
-					board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_PLAYER_WIN);
-					playSound(getWinGameSound());
-					break;
-				case 2: 
-					board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_AI_WIN);
-					playSound(getLoseGameSound());
-					break;
+			if(isHumanPlayersTurn){
+				board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_AI_WIN);
+				playSound(getLoseGameSound());
+				
+			}
+			else {
+				board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_PLAYER_WIN);
+				playSound(getWinGameSound());	
 			}
 						
 		}
@@ -189,9 +208,10 @@ public class ConnectFourGUIDriver
 	
 	public void setHeaderLabel()
 	{
+		
 		if (game.getAILevel() == ConnectFourAI.AILevel.NONE) //if 2 player game
 			board.setHeaderLabelText("                  " + game.getCurrentPlayerName() + " it is your turn");
-		else if(game.getCurrentPlayer() == 2)
+		else if(game.isAITurn())
 			board.setHeaderLabelText("                  " + "The computer is thinking...");
 		else if (game.getAILevel() == ConnectFourAI.AILevel.BEGINNER)
 			board.setHeaderLabelText(ConnectFourGUIBoard.HEADER_EASY_AI);
@@ -221,6 +241,42 @@ public class ConnectFourGUIDriver
 	{
 		if (isSoundEnabled() && sound != null)
 			sound.play();		
+	}
+	
+	public void performAIMove() {
+		timer.start();
+	}
+	
+	private class AIMoveTimer extends Timer
+	{
+
+		public AIMoveTimer(int interval, ActionListener listener) 
+		{
+			super(interval, listener);
+			this.setInitialDelay(2000);
+		}
+		
+	}
+	
+	private class AIMoveAction implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			while (true)
+			{
+				int move = getGame().makeAIMove();
+				
+				if (getGame().isValidMove(move))
+				{
+					makeMove(move);
+					timer.stop();
+					break;
+				}
+				
+			}
+
+		}
 	}
 	
 }

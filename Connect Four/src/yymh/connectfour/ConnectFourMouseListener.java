@@ -11,65 +11,36 @@ public class ConnectFourMouseListener implements MouseListener
 {
 
 	ConnectFourGUIDriver driver;
-	AIMoveTimer timer = new AIMoveTimer(3000, new AIMoveAction());
 
 	ConnectFourMouseListener(ConnectFourGUIDriver driver)
 	{
 		this.driver = driver;
 	}
 	
-	class AIMoveTimer extends Timer
-	{
-
-		public AIMoveTimer(int interval, ActionListener listener) 
-		{
-			super(interval, listener);
-			this.setInitialDelay(2000);
-		}
-		
-	}
-	
-	class AIMoveAction implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e) 
-		{
-			while (true)
-			{
-				int move = driver.getGame().makeAIMove();
-				
-				if (driver.getGame().isValidMove(move))
-				{
-					driver.makeMove(move);
-					timer.stop();
-					break;
-				}
-				
-			}
-		}
-	}
-	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
-		//moveMade is used to make sure a valid move is made otherwise the computer would make the next move when the user 
-		//clicked on a full slot
-		boolean moveMade = driver.makeMove(((int)(e.getX() / 100))); 
-		if (moveMade)
-		{
-			driver.getBoard().revalidate();			
-			driver.getBoard().repaint();
+		//check if the AI is in middle of thinking. only process click if it isn't
+		if (!driver.getGame().isAITurn()) {
 			
-			if (!driver.getGame().checkForWin(driver.getGame().getCurrentPlayer()))
+			//moveMade is used to make sure a valid move is made otherwise the computer would make the next move when the user 
+			//clicked on a full slot
+			boolean moveMade = driver.makeMove(((int)(e.getX() / 100))); 
+			if (moveMade)
 			{
+				driver.getBoard().revalidate();			
+				driver.getBoard().repaint();
 				
-				if (driver.getGame().getAILevel() != ConnectFourAI.AILevel.NONE)
+				if (!driver.getGame().checkForWin(driver.getGame().getCurrentPlayer()))
 				{
-					timer.start();
-					driver.getBoard().repaint();
 					
+					if (driver.getGame().getAILevel() != ConnectFourAI.AILevel.NONE)
+					{
+						driver.performAIMove();
+						driver.getBoard().repaint();
+					}
+						
 				}
-					
 			}
 			
 		}
