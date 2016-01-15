@@ -4,8 +4,8 @@ import java.util.List;
 
 public class ConnectFourAI {
 
-	static final int DEFAULT_BEGINNER_MOVE_DEPTH = 3;
-	static final int DEFAULT_INTERMEDIATE_MOVE_DEPTH = 5;
+	static final int DEFAULT_BEGINNER_MOVE_DEPTH = 2;
+	static final int DEFAULT_INTERMEDIATE_MOVE_DEPTH = 4;
 	static final int DEFAULT_EXPERT_MOVE_DEPTH = 7;
 	static final int DEFAULT_NO_AI_MOVE_DEPTH = 0;
 
@@ -76,7 +76,7 @@ public class ConnectFourAI {
 			//TODO logging
 			System.out.println("AI is calcualting next move at depth of " + depth + " future moves");
 			
-			columnScores = minimax(depth, game.getCurrentPlayer(), game);
+			columnScores = minimax(depth, game);
 			column = getBestMove(columnScores);
 			
 			//TODO logging
@@ -179,14 +179,15 @@ public class ConnectFourAI {
     * 	- check for 3 in a row (return how many are found)
     * 	- check for open spots around the 3 in a row that have pieces underneath them
     * 	- perhaps a key value pair to show where the 3 in a row starts and begins to know
+    * 	  or using 4 loops to check the ones around the area of the most current move
     * 	which direction it is going to check its edges.
     * 
     * TODO ADD LOGGING
 	 */
-	public ArrayList<Integer> minimax(int depth, int turn, ConnectFour game) 
+	public ArrayList<Integer> minimax(int depth, ConnectFour game) 
 	{	
-		//holds future game states for simulation
-		ConnectFour futureGameState = new ConnectFour();
+		//holds clone of game for simulation
+		ConnectFour gameClone = new ConnectFour();
 		
 		//holds the scores for each column in current depth
 		ArrayList<Integer> scores = new ArrayList<>(); 
@@ -195,29 +196,27 @@ public class ConnectFourAI {
 		//recursively call getColumnForMove(depth--, otherTurn) for each column if the column isnt full
 		for (int i = 0; i < ConnectFour.NUM_OF_COLUMNS; i++)
 		{			
-			int scoreToAdd = 0;
+			int scoreToAdd = -1;
 			//ArrayList<Integer> futureScores;
 
 			//make a deep copy of the current game state for simulation
-			futureGameState = new ConnectFour();
-			futureGameState.setCurrentGameState(ConnectFour.deepCopyArray(game.getCurrentGameState()));
-			futureGameState.setCurrentPlayer(game.getCurrentPlayer());
+			gameClone = game.clone();
 			
-			if (futureGameState.isValidMove(i))
+			if (gameClone.isValidMove(i))
 			{
 				//simulate move in copied game
-				futureGameState.makeMove(i, false);
+				gameClone.makeMove(i, false);
 				
 				//if the result is a win condition
-				if (futureGameState.checkForWin(futureGameState.getCurrentPlayer()))
+				if (gameClone.checkForWin(gameClone.getCurrentPlayer()))
 				{
 					//add Integer.MAX_VALUE or Integer.MIN_VALUE respectively based on whose turn it is
 					scoreToAdd = (game.isAITurn() ? Integer.MAX_VALUE : Integer.MIN_VALUE);
 				}
 				else if (depth != 0) //if not a win condition and not at the lowest depth, branch to a lower depth
 				{
-					futureGameState.switchPlayer();
-					ArrayList<Integer> futureScores = (minimax(depth - 1, futureGameState.getCurrentPlayer(), futureGameState));
+					gameClone.switchPlayer();
+					ArrayList<Integer> futureScores = (minimax(depth - 1, gameClone));
 					
 					if (game.isAITurn()) {
 						scoreToAdd = getLowestScore(futureScores);
@@ -225,7 +224,7 @@ public class ConnectFourAI {
 					else {
 						scoreToAdd = getHighestScore(futureScores);
 					}
-						
+
 				}
 				else //if at the lowest depth
 				{
@@ -233,7 +232,7 @@ public class ConnectFourAI {
 						//return 1000000
 //					if (checkForThreeInARowWithOneEmptyAdjoiningSpace(turn, i, futureGameState))
 //						scoreToAdd = 200000;
-					if (ConnectFour.checkForThreeInARow(turn, i, futureGameState))
+					if (ConnectFour.checkForThreeInARow(game.getCurrentPlayer(), i, gameClone))
 						scoreToAdd = 10000;
 					//else if 2 in a row 
 						//return 1000
@@ -242,7 +241,7 @@ public class ConnectFourAI {
 					else 
 						scoreToAdd = 0;
 					
-					if (turn == 1) //if it is the players turn make it a negative number
+					if (!game.isAITurn()) //if it is the players turn make it a negative number
 						scoreToAdd *= -1;
 				}
 				
@@ -250,8 +249,10 @@ public class ConnectFourAI {
 			}
 			else //if move isnt valid return the worst possible value so this column doesnt get chosen
 			{
-				scoreToAdd = ((turn == 1) ? Integer.MAX_VALUE : Integer.MIN_VALUE);
+				scoreToAdd = ((game.isAITurn()) ? Integer.MIN_VALUE : Integer.MAX_VALUE);
 			}
+			
+			//TODO ADD LOGGING System.out.println("adding Score: " + scoreToAdd + " for column: " + i + " at depth: " + depth);
 			
 			//add the score for the current column to the list
 			scores.add(scoreToAdd);

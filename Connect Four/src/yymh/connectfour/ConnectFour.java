@@ -14,8 +14,10 @@ public class ConnectFour
 	
 	//array to keep track of what is in each currentGameState
 	private int[][] currentGameState = new int[NUM_OF_ROWS][NUM_OF_COLUMNS];
+	
 	//store the move history of the game in format [move_number][player][move]
 	private TreeMap<Integer, int[]>gameHistory = new TreeMap<Integer, int[]>();
+	
 	private String player1Name = "Player 1";
 	private String player2Name = "Player 2";
 	
@@ -23,7 +25,7 @@ public class ConnectFour
 
 	private int currentPlayer = 1;
 	private int humanPlayerNumber;
-	
+
 	ConnectFour() {
 		//default constructor
 	}
@@ -71,6 +73,8 @@ public class ConnectFour
 	
 	public void setCurrentPlayer(int player) { this.currentPlayer = player; }
 	public int getCurrentPlayer() { return this.currentPlayer; }
+	public int getHumanPlayerNumber() { return humanPlayerNumber; }
+	public void setHumanPlayerNumber(int humanPlayerNumber) { this.humanPlayerNumber = humanPlayerNumber; }
 	
 	public boolean isValidMove(int column) {
 		return this.currentGameState[0][column] == 0;
@@ -130,8 +134,8 @@ public class ConnectFour
 	}
 	
 	public boolean checkForWin(int playerToCheck) {
-			boolean isWin = false;
-		
+		boolean isWin = false;
+
 		//check for horizontal win
 		for (int row = 0; row < currentGameState.length; row++)
 		{
@@ -375,6 +379,15 @@ public class ConnectFour
 		
 		//by default return false
 		return false;
+	}
+	
+	public ConnectFour clone() {
+		ConnectFour clone = new ConnectFour();
+		clone.setCurrentGameState(deepCopyArray(this.getCurrentGameState()));
+		clone.setCurrentPlayer(this.getCurrentPlayer());
+		clone.setHumanPlayerNumber(this.getHumanPlayerNumber());
+		
+		return clone;
 	}
 	
 	public static int[][] deepCopyArray(int array[][])
