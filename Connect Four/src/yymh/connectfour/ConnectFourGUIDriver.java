@@ -2,6 +2,7 @@ package yymh.connectfour;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -10,6 +11,13 @@ import javax.swing.JOptionPane;
 
 public class ConnectFourGUIDriver 
 {
+	//colors
+	final static Color YELLOW = new Color(245, 230, 0);
+	final static Color PLAYER_1_TOKEN_COLOR = Color.RED;
+	final static Color PLAYER_2_TOKEN_COLOR = Color.BLACK;
+	final static Color MAIN_COLOR = YELLOW;
+	final static Color SECONDARY_COLOR = Color.BLUE;
+	
 	//Action commands
 	final static String ACT_CMD_EXIT = "EXIT";
 	final static String ACT_CMD_NEW_GAME = "NEW GAME";

@@ -1,6 +1,5 @@
 package yymh.connectfour;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -61,7 +60,7 @@ public class ConnectFourGrid extends JPanel
 	public void paintComponent(Graphics g) 
 	{
 		super.paintComponent(g);
-      Graphics2D g2d = (Graphics2D) g.create();
+		Graphics2D g2d = (Graphics2D) g.create();
             
 		Area background = new Area(new Rectangle(0, 0, ConnectFour.NUM_OF_COLUMNS * 100, ConnectFour.NUM_OF_ROWS * 100));
 
@@ -74,9 +73,9 @@ public class ConnectFourGrid extends JPanel
 				if (animate)
 				{
 					if (game.getCurrentPlayer() == 1)
-						g.setColor(Color.YELLOW);
+						g.setColor(ConnectFourGUIDriver.PLAYER_2_TOKEN_COLOR);
 					else
-						g.setColor(Color.RED);
+						g.setColor(ConnectFourGUIDriver.PLAYER_1_TOKEN_COLOR);
 					
 					g.fillOval(animateCol * 100 + 5, dropYPos, 80, 80);
 
@@ -85,16 +84,16 @@ public class ConnectFourGrid extends JPanel
 				if (game.getCurrentGameState()[row][col] == 0 || (animate && row == animateRow && col == animateCol))
 					g.setColor(Color.WHITE);
 				else if (game.getCurrentGameState()[row][col] == 1)
-					g.setColor(Color.RED);
+					g.setColor(ConnectFourGUIDriver.PLAYER_1_TOKEN_COLOR);
 				else 
-					g.setColor(Color.YELLOW);
+					g.setColor(ConnectFourGUIDriver.PLAYER_2_TOKEN_COLOR);
 				
 				g.fillOval( col * 100 + 5, row * 100 + 10, 80, 80);
 
 			}
 		}
 
-		g2d.setColor(Color.BLUE);
+		g2d.setColor(ConnectFourGUIDriver.MAIN_COLOR);
       g2d.fill(background);
       g2d.dispose();
 	}

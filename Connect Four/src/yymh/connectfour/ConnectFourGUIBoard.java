@@ -58,9 +58,10 @@ public class ConnectFourGUIBoard extends JFrame
 		
 		//set up the top panel
 		topPanel = new JPanel(new BorderLayout());
-		topPanel.setBackground(new Color(184, 115, 51));
+		topPanel.setBackground(ConnectFourGUIDriver.SECONDARY_COLOR);
 		topPanel.setLayout(new BorderLayout());
 		headerLabel.setFont(font);
+		headerLabel.setForeground(ConnectFourGUIDriver.MAIN_COLOR);
 		headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		rulesButton = new JButton("Rules");
 		rulesButton.setActionCommand(ConnectFourGUIDriver.ACT_CMD_SHOW_RULES);
@@ -72,7 +73,7 @@ public class ConnectFourGUIBoard extends JFrame
 
 		//user buttons
 		buttonPanel = new JPanel();
-		buttonPanel.setBackground(new Color(184, 115, 51));
+		buttonPanel.setBackground(ConnectFourGUIDriver.SECONDARY_COLOR);
 		newGameButton = new JButton("New Game");
 		newGameButton.setPreferredSize(new Dimension(100, 25));
 		newGameButton.setToolTipText("Clears the board and starts the game over");
