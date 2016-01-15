@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 
@@ -19,10 +20,11 @@ public class ConnectFourGUIDriver
 	final static String ACT_CMD_CHANGE_AI_TO_OFF = "AI TO OFF";
 	final static String ACT_CMD_SHOW_RULES = "SHOW RULES";
 	
-	private AudioClip tieGameSound = Applet.newAudioClip(this.getClass().getResource("audio/tie_game_sound.wav"));
-	private AudioClip dropSound = Applet.newAudioClip(this.getClass().getResource("audio/token_drop.wav"));
-	private AudioClip winGameSound = Applet.newAudioClip(this.getClass().getResource("audio/win_sound.wav"));
-	private AudioClip loseGameSound = Applet.newAudioClip(this.getClass().getResource("audio/tie_game_sound.wav"));
+	String workingDir = System.getProperty("user.dir");
+	private AudioClip tieGameSound;
+	private AudioClip dropSound;
+	private AudioClip winGameSound;
+	private AudioClip loseGameSound;
 	
 	private ConnectFourGUIBoard board;
 	private ConnectFour game;
@@ -46,7 +48,20 @@ public class ConnectFourGUIDriver
 		mouseListener = new ConnectFourMouseListener(this);
 		actionListener = new ConnectFourActionListener(this);
 
+		loadSoundFiles();
+		
 		newGame();
+	}
+	
+	private void loadSoundFiles() {
+		try {
+			tieGameSound = Applet.newAudioClip(new File("audio/tie_game_sound.wav").toURI().toURL());
+			dropSound = Applet.newAudioClip(new File("audio/token_drop.wav").toURI().toURL());
+			winGameSound = Applet.newAudioClip(new File("audio/win_sound.wav").toURI().toURL());
+			loseGameSound = Applet.newAudioClip(new File("audio/tie_game_sound.wav").toURI().toURL());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void addActionListeners()
