@@ -8,6 +8,8 @@ import java.util.Date;
 
 import javax.swing.*;
 
+import yymh.connectfour.ConnectFourAI.AILevel;
+
 public class ConnectFourActionListener implements ActionListener 
 {
 
@@ -63,35 +65,43 @@ public class ConnectFourActionListener implements ActionListener
 		}
 		else if (e.getActionCommand() == ConnectFourGUIDriver.ACT_CMD_CHANGE_AI_TO_OFF)
 		{
-			driver.newGame();
-			driver.getGame().setAILevel(ConnectFourAI.AILevel.NONE);
-			driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_EASY_AI);
-			ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
-			menu.getAINoneOption().setSelected(true);
+			if (driver.getGame().getAILevel() != AILevel.NONE) {
+				driver.getGame().setAILevel(ConnectFourAI.AILevel.NONE);
+				driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_EASY_AI);
+				ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
+				menu.getAINoneOption().setSelected(true);
+				driver.newGame();
+			}
 		}
 		else if (e.getActionCommand() == ConnectFourGUIDriver.ACT_CMD_CHANGE_AI_TO_EASY)
 		{
-			driver.newGame();
-			driver.getGame().setAILevel(ConnectFourAI.AILevel.BEGINNER);
-			driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_EASY_AI);
-			ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
-			menu.getAIEasyOption().setSelected(true);
+			if (driver.getGame().getAILevel() != AILevel.BEGINNER) {
+				driver.getGame().setAILevel(ConnectFourAI.AILevel.BEGINNER);
+				driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_EASY_AI);
+				ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
+				menu.getAIEasyOption().setSelected(true);
+				driver.newGame();
+			}
 		}
 		else if (e.getActionCommand() == ConnectFourGUIDriver.ACT_CMD_CHANGE_AI_TO_MEDIUM)
 		{
-			driver.newGame();
-			driver.getGame().setAILevel(ConnectFourAI.AILevel.INTERMEDIATE);
-			driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_MEDIUM_AI);
-			ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
-			menu.getAIMediumOption().setSelected(true);
+			if (driver.getGame().getAILevel() != AILevel.INTERMEDIATE) {
+				driver.getGame().setAILevel(ConnectFourAI.AILevel.INTERMEDIATE);
+				driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_MEDIUM_AI);
+				ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
+				menu.getAIMediumOption().setSelected(true);
+				driver.newGame();
+			}
 		}
 		else if (e.getActionCommand() == ConnectFourGUIDriver.ACT_CMD_CHANGE_AI_TO_HARD)
 		{
-			driver.newGame();
-			driver.getGame().setAILevel(ConnectFourAI.AILevel.EXPERT);
-			driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_HARD_AI);
-			ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
-			menu.getAIHardOption().setSelected(true);
+			if (driver.getGame().getAILevel() != AILevel.EXPERT) {
+				driver.getGame().setAILevel(ConnectFourAI.AILevel.EXPERT);
+				driver.getBoard().setHeaderLabelText(ConnectFourGUIBoard.HEADER_HARD_AI);
+				ConnectFourMenuBar menu = (ConnectFourMenuBar)driver.getBoard().getMenu();
+				menu.getAIHardOption().setSelected(true);
+				driver.newGame();
+			}
 		}
 
 	}

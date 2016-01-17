@@ -23,6 +23,10 @@ public class ConnectFourMouseListener implements MouseListener
 	public void mouseClicked(MouseEvent e) {
 		
 		//check if the AI is in middle of thinking. only process click if it isn't
+		
+		//TODO ADD TO LOGGING
+		System.out.println("User clicked and it should be reistered: " + (driver.getGame().getAILevel() == AILevel.NONE || !driver.getGame().isAITurn()));
+		
 		if (driver.getGame().getAILevel() == AILevel.NONE || !driver.getGame().isAITurn()) {
 			
 			//moveMade is used to make sure a valid move is made otherwise the computer would make the next move when the user 
@@ -45,6 +49,15 @@ public class ConnectFourMouseListener implements MouseListener
 				}
 			}
 			
+		}
+		else {
+			//TODO ADD TO LOGGING
+			System.out.print("User clicked but it is not registered because: ");
+			if (driver.getGame().isAITurn()) {
+				System.out.println("it is the AI's turn");
+				System.out.println("The human player is player #" + driver.getGame().getHumanPlayerNumber());
+				System.out.println("The current player is player #" + driver.getGame().getCurrentPlayer());
+			}
 		}
 		
 	}

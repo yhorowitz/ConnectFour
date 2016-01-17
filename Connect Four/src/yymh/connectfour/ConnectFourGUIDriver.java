@@ -109,7 +109,7 @@ public class ConnectFourGUIDriver
 			board.dispose();
 		if (game != null)
 		{
-			ConnectFourAI.AILevel aiLevel = game.getAILevel();
+			AILevel aiLevel = game.getAILevel();
 			game = new ConnectFour();
 			game.setAILevel(aiLevel);
 		}

@@ -176,8 +176,8 @@ public class ConnectFourConsoleDriver
 				switch (board[row][column])
 				{
 					case 0: symbol = "-"; break;
-					case 1: symbol = "Y"; break;
-					case 2: symbol = "R"; break;
+					case 1: symbol = "X"; break;
+					case 2: symbol = "O"; break;
 				}
 				System.out.print(symbol + " ");
 				
