@@ -88,7 +88,7 @@ public class ConnectFourGUIDriver
 		actionListener = new ConnectFourActionListener(this);
 
 		loadSoundFiles();
-		//System.out.println(this.getClass().getClassLoader().getResource(TIE_SOUND_URL));
+
 		newGame();
 	}
 	
@@ -119,7 +119,6 @@ public class ConnectFourGUIDriver
 			tokenDropSoundClip = null;
 			e.printStackTrace();
 		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -161,6 +160,16 @@ public class ConnectFourGUIDriver
 		board = new ConnectFourGUIBoard();
 		board.getGrid().setGame(game);
 
+		if (game.getAILevel() == AILevel.NONE)
+			((ConnectFourMenuBar) board.getMenu()).getAINoneOption().setSelected(true);
+		else if (game.getAILevel() == AILevel.BEGINNER)
+			((ConnectFourMenuBar) board.getMenu()).getAIEasyOption().setSelected(true);
+		else if (game.getAILevel() == AILevel.INTERMEDIATE)
+			((ConnectFourMenuBar) board.getMenu()).getAIMediumOption().setSelected(true);
+		else if (game.getAILevel() == AILevel.EXPERT)
+			((ConnectFourMenuBar) board.getMenu()).getAIHardOption().setSelected(true);
+
+		
 		if (game.getAILevel() != AILevel.NONE && game.isAITurn()) {
 			System.out.println("AI goes first");
 			setHeaderLabel();
