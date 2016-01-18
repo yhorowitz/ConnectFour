@@ -7,8 +7,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Scanner;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
@@ -41,11 +51,20 @@ public class ConnectFourGUIDriver
 	AIMoveTimer timer = new AIMoveTimer(3000, new AIMoveAction());
 	
 	String workingDir = System.getProperty("user.dir");
-	private AudioClip tieGameSound;
-	private AudioClip dropSound;
-	private AudioClip winGameSound;
-	private AudioClip loseGameSound;
-	
+	private static final String TIE_SOUND_URL = "audio/tie_game_sound.wav";
+	private static final String WIN_SOUND_URL = "audio/win_sound.wav";
+	private static final String LOSE_SOUND_URL = "audio/tie_game_sound.wav";
+	private static final String DROP_SOUND_URL = "audio/token_drop.wav";
+	private Clip tieGameSoundClip;
+	private Clip loseGameSoundClip;
+	private Clip winGameSoundClip;
+	private Clip tokenDropSoundClip;
+	private AudioInputStream tieGameSound;
+	private AudioInputStream dropSound;
+	private AudioInputStream winGameSound;
+	private AudioInputStream loseGameSound;
+	Clip clip;
+
 	private ConnectFourGUIBoard board;
 	private ConnectFour game;
 	private ConnectFourMouseListener mouseListener;
@@ -58,10 +77,10 @@ public class ConnectFourGUIDriver
 	public void setBoard(ConnectFourGUIBoard board) { this.board = board; }
 	public void setGame(ConnectFour game) { this.game = game; }
 	public void toggleSound() { this.soundEnabled = soundEnabled ? false : true; }
-	public AudioClip getTieGameSound() { return tieGameSound; }
-	public AudioClip getWinGameSound() { return winGameSound; }
-	public AudioClip getLoseGameSound() { return loseGameSound; }
-	public AudioClip getTokenDropSound() { return dropSound; }
+	public Clip getTieGameSound() { return tieGameSoundClip; }
+	public Clip getWinGameSound() { return winGameSoundClip; }
+	public Clip getLoseGameSound() { return loseGameSoundClip; }
+	public Clip getTokenDropSound() { return tokenDropSoundClip; }
 	
 	ConnectFourGUIDriver()
 	{
@@ -69,17 +88,38 @@ public class ConnectFourGUIDriver
 		actionListener = new ConnectFourActionListener(this);
 
 		loadSoundFiles();
-		
+		//System.out.println(this.getClass().getClassLoader().getResource(TIE_SOUND_URL));
 		newGame();
 	}
 	
 	private void loadSoundFiles() {
+		
 		try {
-			tieGameSound = Applet.newAudioClip(new File("audio/tie_game_sound.wav").toURI().toURL());
-			dropSound = Applet.newAudioClip(new File("audio/token_drop.wav").toURI().toURL());
-			winGameSound = Applet.newAudioClip(new File("audio/win_sound.wav").toURI().toURL());
-			loseGameSound = Applet.newAudioClip(new File("audio/tie_game_sound.wav").toURI().toURL());
-		} catch (MalformedURLException e) {
+			tieGameSoundClip = AudioSystem.getClip();
+			winGameSoundClip = AudioSystem.getClip();
+			loseGameSoundClip = AudioSystem.getClip();
+			tokenDropSoundClip = AudioSystem.getClip();
+			
+			tieGameSound = AudioSystem.getAudioInputStream(getClass().getClassLoader().getResource(TIE_SOUND_URL));
+			dropSound = AudioSystem.getAudioInputStream(getClass().getClassLoader().getResource(DROP_SOUND_URL));
+			winGameSound = AudioSystem.getAudioInputStream(getClass().getClassLoader().getResource(WIN_SOUND_URL));
+			loseGameSound = AudioSystem.getAudioInputStream(getClass().getClassLoader().getResource(LOSE_SOUND_URL));
+			
+			tieGameSoundClip.open(tieGameSound);
+			winGameSoundClip.open(winGameSound);
+			loseGameSoundClip.open(loseGameSound);
+			tokenDropSoundClip.open(dropSound);
+			
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			tieGameSoundClip = null;
+			winGameSoundClip = null;
+			loseGameSoundClip = null;
+			tokenDropSoundClip = null;
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -237,10 +277,17 @@ public class ConnectFourGUIDriver
 		return rules.toString();
 	}
 	
-	public void playSound(AudioClip sound)
+	public void playSound(Clip sound)
 	{
-		if (isSoundEnabled() && sound != null)
-			sound.play();		
+		
+		if (isSoundEnabled() && sound != null) {
+			if (sound.isRunning())
+				sound.stop();
+			
+			sound.setFramePosition(0);
+			sound.start();
+		}
+
 	}
 	
 	public void performAIMove() {

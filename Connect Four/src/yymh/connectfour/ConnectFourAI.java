@@ -145,7 +145,7 @@ public class ConnectFourAI {
 	
 	/**
 	 * Want to implement
-    *   - add aplha beta pruning
+    *   - add alpha beta pruning
     * 
     * TODO ADD LOGGING
 	 */
@@ -184,6 +184,7 @@ public class ConnectFourAI {
 				}
 				else if (depth > 1) //if not a win condition and not at the lowest depth, branch to a lower depth
 				{
+					
 					gameClone.switchPlayer();
 					ArrayList<Integer> futureScores = (minimax(depth - 1, gameClone));
 					
@@ -192,8 +193,7 @@ public class ConnectFourAI {
 					}
 					else {
 						scoreToAdd = getHighestScore(futureScores);
-					}
-					
+					}					
 
 				}
 				else {
@@ -389,8 +389,13 @@ public class ConnectFourAI {
 			}
 		}
 		
-		//ConnectFourConsoleDriver.printCurrentBoard(boardState);
-		//System.out.println("Calculated Score: " + aiScore);
+		/*
+		 * FOR TESTING PURPOSES ONLY
+		 * 
+		 * ConnectFourConsoleDriver.printCurrentBoard(boardState);
+		 * System.out.println("Calculated Score: " + aiScore);
+		 */
+	
 		return aiScore - playerScore;
 	}
 	

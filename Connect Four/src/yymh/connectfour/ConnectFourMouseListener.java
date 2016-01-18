@@ -25,7 +25,7 @@ public class ConnectFourMouseListener implements MouseListener
 		//check if the AI is in middle of thinking. only process click if it isn't
 		
 		//TODO ADD TO LOGGING
-		System.out.println("User clicked and it should be reistered: " + (driver.getGame().getAILevel() == AILevel.NONE || !driver.getGame().isAITurn()));
+		System.out.println("User clicked and it should be registered: " + (driver.getGame().getAILevel() == AILevel.NONE || !driver.getGame().isAITurn()));
 		
 		if (driver.getGame().getAILevel() == AILevel.NONE || !driver.getGame().isAITurn()) {
 			
