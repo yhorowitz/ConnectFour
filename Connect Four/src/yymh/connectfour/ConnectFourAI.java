@@ -5,10 +5,10 @@ import java.util.Random;
 
 public class ConnectFourAI {
 
+	static final int DEFAULT_NO_AI_MOVE_DEPTH = 0;
 	static final int DEFAULT_BEGINNER_MOVE_DEPTH = 3;
 	static final int DEFAULT_INTERMEDIATE_MOVE_DEPTH = 5;
 	static final int DEFAULT_EXPERT_MOVE_DEPTH = 7;
-	static final int DEFAULT_NO_AI_MOVE_DEPTH = 0;
 
 	enum AILevel {
 		NONE, BEGINNER, INTERMEDIATE, EXPERT
@@ -144,12 +144,7 @@ public class ConnectFourAI {
 	}
 	
 	/**
-	 * Need to implement
-    * 	- check for 3 in a row (return how many are found)
-    * 	- check for open spots around the 3 in a row that have pieces underneath them
-    * 	- perhaps a key value pair to show where the 3 in a row starts and begins to know
-    * 	  or using 4 loops to check the ones around the area of the most current move
-    * 	which direction it is going to check its edges.
+	 * Want to implement
     *   - add aplha beta pruning
     * 
     * TODO ADD LOGGING
@@ -230,6 +225,8 @@ public class ConnectFourAI {
 
 	}
 	
+	//add in scores for disjointed 3 IAR
+	//add in scores for 2 IAR 
 	public int scoreBoardState(ConnectFour game){
 		int totalScore = 0;
 		int aiScore = 0;
@@ -239,7 +236,7 @@ public class ConnectFourAI {
 		/*
 		 * SCORING (for MAX, MIN is score for MAX * -1):
 		 * 
-		 * WIN CONDITION = 250,000
+		 * WIN CONDITION = Integer.MAX_VALUE
 		 * ---------------------
 		 * horizontal & diagonal
 		 * ---------------------
@@ -281,28 +278,35 @@ public class ConnectFourAI {
 		final int AI = game.isAITurn() ? game.getCurrentPlayer() : game.getHumanPlayerNumber();
 		final int PL = game.getHumanPlayerNumber();
 		
+		int player; //tracks which player is being scored
+		
 		//calculate score for current state of the board in each direction
 		
-		/*
-		 * (horizontal)
-		 * check for 3 IAR + 1 OS each side 
-		 * or for 3 IAR + 1 OS on one side
-		 */
+		//horizontal
 		for (int i = 0; i < boardState.length; i++) {
 			for (int j = 0; j < boardState[i].length - 4; j++) {
 				
 				//look for 3IAR+1OS each side for AI (only if there is enough room left on the row for it to be possible)
-				if (j < boardState[i].length - 5 &&
-					(boardState[i][j] == EM && boardState[i][j + 1] == AI && boardState[i][j + 2] == AI && boardState[i][j + 3] == AI && boardState[i][j + 4] == EM)) {
+				//the player with the number in a row is set within the if statement
+				if (j < boardState[i].length - 5 && (player = hasThreeInARowAndTwoOpenSpaces_Horizontal(boardState, i, j)) != 0) {
+					
+					player = hasThreeInARowAndTwoOpenSpaces_Horizontal(boardState, i, j);
+					
+					if (player == AI)	
 						aiScore += SCORE_THREE_IAR_TWO_OS;
+					else if (player == PL)	
+						playerScore += SCORE_THREE_IAR_TWO_OS;
 				}
-				//look for 3IAR+1OS before
-				else if (boardState[i][j] == EM && boardState[i][j + 1] == AI && boardState[i][j + 2] == AI && boardState[i][j + 3] == AI) {
-					aiScore += SCORE_THREE_IAR_ONE_OS;
-				}
-				//look for 3IAR+1OS after
-				else if (boardState[i][j] == AI && boardState[i][j + 1] == AI && boardState[i][j + 2] == AI && boardState[i][j + 3] == EM) {
-					aiScore += SCORE_THREE_IAR_ONE_OS;
+				//look for 3IAR+1OS
+				//the player with the number in a row is set within the if statement
+				else if (j < boardState.length - 4 && (player = hasThreeInARowAndOneOpenSpace_Horizontal(boardState, i, j)) != 0) {
+					
+					player = hasThreeInARowAndOneOpenSpace_Horizontal(boardState, i, j);
+
+					if (player == AI)	
+						aiScore += SCORE_THREE_IAR_ONE_OS;
+					else if (player == PL)	
+						playerScore += SCORE_THREE_IAR_ONE_OS;
 				}
 					
 			}
@@ -313,12 +317,22 @@ public class ConnectFourAI {
 			for (int j = 0; j < boardState.length - 3; j++) {
 				
 				//check for 3 in a row
-				if (boardState[j][i] == EM && boardState[j + 1][i] == AI && boardState[j + 2][i] == AI && boardState[j + 3][i] == AI) {
-					aiScore += SCORE_VERT_THREE_IAR;
+				if (boardState[j][i] == EM && boardState[j + 1][i] == boardState[j + 2][i] && boardState[j + 2][i] == boardState[j + 3][i]) {
+					player = boardState[j + 1][i];
+					
+					if (player == AI)	
+						aiScore += SCORE_VERT_THREE_IAR;
+					else if (player == PL)	
+						playerScore += SCORE_VERT_THREE_IAR;
 				}	
 				//check for 2 in a row
-				else if (boardState[j][i] == EM && boardState[j + 1][i] == EM && boardState[j + 2][i] == AI && boardState[j + 3][i] == AI) {
-					aiScore += SCORE_VERT_TWO_IAR;
+				else if (boardState[j][i] == EM && boardState[j + 1][i] == EM && boardState[j + 2][i] == boardState[j + 3][i]) {
+					player = boardState[j + 2][i];
+					
+					if (player == AI)	
+						aiScore += SCORE_VERT_TWO_IAR;
+					else if (player == PL)	
+						playerScore += SCORE_VERT_TWO_IAR;
 				}
 			}
 		}
@@ -328,48 +342,128 @@ public class ConnectFourAI {
 			for (int j = 0; j < boardState[i].length - 4; j++) {
 				
 				//look for 3IAR+1OS each side for AI (only if there is enough room left on the row for it to be possible)
-				if (i < boardState.length - 5 && j < boardState[i].length - 5 && 
-					(boardState[i][j] == EM && boardState[i + 1][j + 1] == AI && boardState[i + 2][j + 2] == AI && boardState[i + 3][j + 3] == AI && boardState[i + 4][j + 4] == EM)) {
+				//the player with the number in a row is set within the if statement
+				if (i < boardState.length - 5 && j < boardState[i].length - 5 && (player = hasThreeInARowAndTwoOpenSpaces_Diagonal_UpperLeftToLowerRight(boardState, i, j)) != 0) {
+										
+					if (player == AI)	
 						aiScore += SCORE_THREE_IAR_TWO_OS;
+					else if (player == PL)	
+						playerScore += SCORE_THREE_IAR_TWO_OS;
 					
 				}
-				//look for 3IAR+1OS before
-				else if (boardState[i][j] == EM && boardState[i + 1][j + 1] == AI && boardState[i + 2][j + 2] == AI && boardState[i + 3][j + 3] == AI) {
-					aiScore += SCORE_THREE_IAR_ONE_OS;
+				//look for 3IAR+1OS
+				//the player with the number in a row is set within the if statement
+				else if (i < boardState.length - 4 && j < boardState[i].length - 4 && (player = hasThreeInARowAndOneOpenSpace_Diagonal_UpperLeftToLowerRight(boardState, i, j)) != 0) {
+					
+					if (player == AI)	
+						aiScore += SCORE_THREE_IAR_ONE_OS;
+					else if (player == PL)	
+						playerScore += SCORE_THREE_IAR_ONE_OS;
 				}
-				//look for 3IAR+1OS after
-				else if (boardState[i][j] == AI && boardState[i + 1][j + 1] == AI && boardState[i + 2][j + 2] == AI && boardState[i + 3][j + 3] == EM) {
-					aiScore += SCORE_THREE_IAR_ONE_OS;
-				}
-				
+
 			}
+			
 		}
 		
 		//diagonal upper right -> bottom left
 		for (int i = 0; i < boardState.length - 4; i++) {
 			for (int j = 3; j < boardState[i].length; j++) {
 				
-				//check for how many in a row. if found skip past it (dont double count)
-				//check if it there are open spaces around it
-				if (i < boardState.length && j > 3 &&
-					(boardState[i][j] == EM && boardState[i + 1][j - 1] == AI && boardState[i + 2][j - 2] == AI && boardState[i + 3][j - 3] == AI && boardState[i + 4][j - 4] == EM)) {
+				//look for 3IAR + 2 OS
+				//the player with the number in a row is set within the if statement
+				if (i < boardState.length - 5 && j > 3 && (player = hasThreeInARowAndTwoOpenSpaces_Diagonal_UpperRightToLowerLeft(boardState, i, j)) != 0){
+					if (player == AI)	
 						aiScore += SCORE_THREE_IAR_TWO_OS;
+					else if (player == PL)	
+						playerScore += SCORE_THREE_IAR_TWO_OS;
 				}
 				//look for 3IAR+1OS before
-				else if (boardState[i][j] == EM && boardState[i + 1][j - 1] == AI && boardState[i + 2][j - 2] == AI && boardState[i + 3][j - 3] == AI) {
-					aiScore += SCORE_THREE_IAR_ONE_OS;
-				}
-				//look for 3IAR+1OS after
-				else if (boardState[i][j] == AI && boardState[i + 1][j - 1] == AI && boardState[i + 2][j - 2] == AI && boardState[i + 3][j - 3] == EM) {
-					aiScore += SCORE_THREE_IAR_ONE_OS;
+				//the player with the number in a row is set within the if statement
+				else if (i < boardState.length - 4 && j > 2 && (player = hasThreeInARowAndOneOpenSpace_Diagonal_UpperRightToLowerLeft(boardState, i, j)) != 0) {
+					
+					if (player == AI)	
+						aiScore += SCORE_THREE_IAR_ONE_OS;
+					else if (player == PL)	
+						playerScore += SCORE_THREE_IAR_ONE_OS;
 				}
 			}
 		}
 		
-		//calculate disjointed 3IARs
 		//ConnectFourConsoleDriver.printCurrentBoard(boardState);
 		//System.out.println("Calculated Score: " + aiScore);
-		return aiScore;
+		return aiScore - playerScore;
+	}
+	
+	// If a player has 3 IAR + 2 OS (one on each side) it returns the player number otherwise it returns 0
+	public int hasThreeInARowAndTwoOpenSpaces_Horizontal(int[][] boardState, int row, int col) {
+		if (boardState[row][col] == 0
+			&& boardState[row][col + 1] == boardState[row][col + 2] && boardState[row][col + 2] == boardState[row][col + 3] 
+			&& boardState[row][col + 4] == 0) 
+		{
+			return boardState[row][col + 1];
+		}
+		
+		return 0;
+	}
+	
+	// If a player has 3 IAR + 2 OS (one on each side) it returns the player number otherwise it returns 0
+	public int hasThreeInARowAndTwoOpenSpaces_Diagonal_UpperLeftToLowerRight(int[][] boardState, int row, int col) {
+		if (boardState[row][col] == 0 
+				&& boardState[row + 1][col + 1] == boardState[row + 2][col + 2] && boardState[row + 2][col + 2] == boardState[row + 3][col + 3] 
+				&& boardState[row + 4][col + 4] == 0) 
+		{
+			return boardState[row + 1][col + 1];
+		}
+		
+		return 0;
+	}	
+
+	// If a player has 3 IAR + 2 OS (one on each side) it returns the player number otherwise it returns 0
+	public int hasThreeInARowAndTwoOpenSpaces_Diagonal_UpperRightToLowerLeft(int[][] boardState, int row, int col) {
+		if (boardState[row][col] == 0
+				&& boardState[row + 1][col - 1] == boardState[row + 2][col - 2] && boardState[row + 2][col - 2] == boardState[row + 3][col - 3] 
+				&& boardState[row + 4][col - 4] == 0) 
+		{
+			return boardState[row + 1][col - 1];
+		}
+		
+		return 0;
+	}	
+		
+	// If a player has 3 IAR + 1 OS on one side it returns the player number otherwise it returns 0
+	public int hasThreeInARowAndOneOpenSpace_Horizontal(int[][] boardState, int row, int col) {
+		//checks for 1 open space on either side
+		if ((boardState[row][col] == 0 && boardState[row][col + 1] == boardState[row][col + 2] && boardState[row][col + 2] == boardState[row][col + 3])
+			|| (boardState[row][col] == boardState[row][col + 1] && boardState[row][col + 1] == boardState[row][col + 2] && boardState[row][col + 3] == 0))
+		{
+			return boardState[row][col + 1];
+		}
+		
+		return 0;
+	}
+
+	// If a player has 3 IAR + 1 OS on one side it returns the player number otherwise it returns 0
+	public int hasThreeInARowAndOneOpenSpace_Diagonal_UpperLeftToLowerRight(int[][] boardState, int row, int col) {
+		//checks for 1 open space on either side
+		if ((boardState[row][col] == 0 && boardState[row + 1][col + 1] == boardState[row + 2][col + 2] && boardState[row + 2][col + 2] == boardState[row + 3][col + 3])
+			|| (boardState[row][col] == boardState[row + 1][col + 1] && boardState[row + 1][col + 1] == boardState[row + 2][col + 2] && boardState[row + 3][col + 3] == 0))
+		{
+			return boardState[row + 1][col + 1];
+		}
+		
+		return 0;
+	}
+	
+	// If a player has 3 IAR + 1 OS on one side it returns the player number otherwise it returns 0
+	public int hasThreeInARowAndOneOpenSpace_Diagonal_UpperRightToLowerLeft(int[][] boardState, int row, int col) {
+		//checks for 1 open space on either side
+		if ((boardState[row][col] == 0 && boardState[row + 1][col - 1] == boardState[row + 2][col - 2] && boardState[row + 2][col - 2] == boardState[row + 3][col - 3])
+			|| (boardState[row][col] == boardState[row + 1][col - 1] && boardState[row + 1][col - 1] == boardState[row + 2][col - 2] && boardState[row + 3][col - 3] == 0))
+		{
+			return boardState[row + 1][col - 1];
+		}
+		
+		return 0;
 	}
 	
 }
